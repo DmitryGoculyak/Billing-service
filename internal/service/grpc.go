@@ -3,7 +3,7 @@ package service
 import (
 	"Billing-service-/internal/db"
 	"Billing-service-/internal/db/models"
-	"Billing-service-/proto"
+	proto "Billing-service-/pkg/proto"
 	"context"
 	"database/sql"
 	"errors"
