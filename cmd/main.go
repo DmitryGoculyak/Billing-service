@@ -1,11 +1,11 @@
 package main
 
 import (
-	"Billing-service-/internal/db"
-	"Billing-service-/internal/service"
+	"Billing-service-/internal/container"
 )
 
 func main() {
-	db.InitDB()
-	service.RunServer()
+	app := container.Build()
+
+	app.Run()
 }
