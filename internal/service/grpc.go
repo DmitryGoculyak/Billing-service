@@ -48,10 +48,8 @@ func (s *BillingServer) GetWallet(ctx context.Context, req *proto.GetWalletReque
 	err := s.db.Get(&wallet, "SELECT * FROM wallets WHERE user_id = $1", req.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			log.Println("Error:", err)
 			return nil, status.Errorf(codes.NotFound, "wallet not found")
 		}
-		log.Println("Error:", err)
 		return nil, status.Error(codes.Internal, "unknown error")
 	}
 	return &proto.WalletResponse{
@@ -60,15 +58,6 @@ func (s *BillingServer) GetWallet(ctx context.Context, req *proto.GetWalletReque
 		CurrencyCode: wallet.CurrencyCode,
 		Balance:      wallet.Balance,
 	}, nil
-}
-
-func (s *BillingServer) DeleteAllWallets(ctx context.Context, _ *proto.Empty) (*proto.DeleteWallets, error) {
-	_, err := s.db.Exec("DELETE FROM wallets")
-	if err != nil {
-		log.Println("Error:", err)
-		return nil, err
-	}
-	return &proto.DeleteWallets{Message: "All wallets deleted"}, nil
 }
 
 func RunServer(cfg *cfg.GrpcServiceConfig, server *BillingServer) {
@@ -83,7 +72,8 @@ func RunServer(cfg *cfg.GrpcServiceConfig, server *BillingServer) {
 	grpcServer := grpc.NewServer()
 	proto.RegisterBillingServiceServer(grpcServer, server)
 
-	log.Printf("[gRPC] Server started at time %v on port %v", time.Now().Format("[2006-01-02] [15:04]"), lis.Addr().(*net.TCPAddr).Port)
+	log.Printf("[gRPC] Server started at time %v on port %v",
+		time.Now().Format("[2006-01-02] [15:04]"), address)
 	if err = grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
