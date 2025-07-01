@@ -1,8 +1,14 @@
 package service
 
-import "go.uber.org/fx"
+import (
+	"Billing-service-/internal/server"
+	"go.uber.org/fx"
+)
 
 var Module = fx.Module("service",
-	fx.Provide(BillingServerConstructor),
-	fx.Invoke(RunServer),
+	fx.Provide(
+		BillingServerConstructor,
+		func(s *BillingServer) BillingServiceServer { return s },
+	),
+	fx.Invoke(server.RunServer),
 )
