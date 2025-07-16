@@ -1,15 +1,14 @@
 package service
 
 import (
+	"Billing-service-/internal/entity"
 	repo "Billing-service-/internal/repository"
-	proto "Billing-service-/pkg/proto"
-
 	"context"
 )
 
 type BillingServiceServer interface {
-	CreateWallets(ctx context.Context, req *proto.CreateWalletRequest) (*proto.WalletResponse, error)
-	GetWallets(ctx context.Context, req *proto.GetWalletRequest) (*proto.WalletResponse, error)
+	CreateWallets(ctx context.Context, userID, currencyName string) (*entity.Wallet, error)
+	GetWallets(ctx context.Context, userID string) (*entity.Wallet, error)
 }
 
 type BillingServer struct {
@@ -22,10 +21,10 @@ func BillingServerConstructor(
 	return &BillingServer{repo: repo}
 }
 
-func (s *BillingServer) CreateWallets(ctx context.Context, req *proto.CreateWalletRequest) (*proto.WalletResponse, error) {
-	return s.repo.CreateWallet(ctx, req.UserId, req.CurrencyCode)
+func (s *BillingServer) CreateWallets(ctx context.Context, UserID, currencyName string) (*entity.Wallet, error) {
+	return s.repo.CreateWallet(ctx, UserID, currencyName)
 }
 
-func (s *BillingServer) GetWallets(ctx context.Context, req *proto.GetWalletRequest) (*proto.WalletResponse, error) {
-	return s.repo.GetWallet(ctx, req.UserId)
+func (s *BillingServer) GetWallets(ctx context.Context, userID string) (*entity.Wallet, error) {
+	return s.repo.GetWallet(ctx, userID)
 }

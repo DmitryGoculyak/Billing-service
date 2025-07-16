@@ -1,8 +1,8 @@
-package models
+package entity
 
 import "time"
 
-type WalletDB struct {
+type Wallet struct {
 	Id           string    `db:"id"`
 	UserId       string    `db:"user_id"`
 	CurrencyCode string    `db:"currency_code"`

@@ -1,8 +1,7 @@
 package pgsql
 
 import (
-	"Billing-service-/internal/db/models"
-	proto "Billing-service-/pkg/proto"
+	"Billing-service-/internal/entity"
 	"context"
 	"database/sql"
 	"errors"
@@ -23,24 +22,19 @@ func BillingRepositoryConstructor(
 	}
 }
 
-func (r *BillingRepo) CreateWallet(ctx context.Context, userID, currencyCode string) (*proto.WalletResponse, error) {
-	var id string
-	err := r.db.GetContext(ctx, &id, "INSERT INTO wallets (user_id,currency_code) VALUES ($1, $2) RETURNING id",
+func (r *BillingRepo) CreateWallet(ctx context.Context, userID, currencyCode string) (*entity.Wallet, error) {
+	var wallet entity.Wallet
+	err := r.db.GetContext(ctx, &wallet, "INSERT INTO wallets (user_id,currency_code) VALUES ($1, $2) RETURNING id",
 		userID, currencyCode)
 	if err != nil {
 		return nil, err
 	}
 
-	return &proto.WalletResponse{
-		Id:           id,
-		UserId:       userID,
-		CurrencyCode: currencyCode,
-		Balance:      0.0,
-	}, nil
+	return &wallet, nil
 }
 
-func (r *BillingRepo) GetWallet(ctx context.Context, userID string) (*proto.WalletResponse, error) {
-	var wallet models.WalletDB
+func (r *BillingRepo) GetWallet(ctx context.Context, userID string) (*entity.Wallet, error) {
+	var wallet entity.Wallet
 	err := r.db.GetContext(ctx, &wallet, "SELECT * FROM wallets WHERE user_id = $1", userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -48,10 +42,6 @@ func (r *BillingRepo) GetWallet(ctx context.Context, userID string) (*proto.Wall
 		}
 		return nil, status.Error(codes.Internal, "unknown error")
 	}
-	return &proto.WalletResponse{
-		Id:           wallet.Id,
-		UserId:       wallet.UserId,
-		CurrencyCode: wallet.CurrencyCode,
-		Balance:      wallet.Balance,
-	}, nil
+
+	return &wallet, nil
 }
