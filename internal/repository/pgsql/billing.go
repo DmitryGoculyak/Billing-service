@@ -27,7 +27,7 @@ func (r *BillingRepo) CreateWallet(ctx context.Context, userID, currencyCode str
 	err := r.db.GetContext(ctx, &wallet, "INSERT INTO wallets (user_id,currency_code) VALUES ($1, $2) RETURNING id",
 		userID, currencyCode)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &wallet, nil
